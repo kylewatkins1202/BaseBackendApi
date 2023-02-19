@@ -1,28 +1,33 @@
 const express = require('express')
+const log = require("npmlog")
 const app = express()
+const helmet = require('helmet')
 require('dotenv').config()
 
-var request = require("request");
+const startServer = async () => {
+    // Use express json
+    app.use(express.json())
 
-var options = { 
-    method: 'POST',
-    url: process.env.AUTH0DEVURL,
-    headers: { 'content-type': 'application/json' },
-    json: true,
-    body: {
-        "client_id": `${process.env.AUTH0CLIENTID}`,
-        "client_secret": `${process.env.AUTH0CLIENTSECRET}`,
-        "audience":"https://dev-8thfiirtu53kyn3d.us.auth0.com/api/v2/",
-        "grant_type":"client_credentials"
-    }
+    // Use helmet
+    app.use(helmet())
+
+    // Create api router
+    const api = require('./router')
+
+    // Create api
+    app.use('/api', api)
+
+    // Use error catching
+    const {errorCatcher} = require('./middleware/errorCatcher')
+    app.use(errorCatcher)
+
+    // Start server
+    var server = app.listen(8081, function () {
+        var host = "localhost"
+        var port = server.address().port
+        
+        log.notice(`Server Started http://${host}:${port}`)
+    })
 }
 
-let accessToken
-
-request(options, function (error, response, body) {
-    console.log(process.env.AUTH0CLIENTID)
-    if (error) throw new Error(error);
-    accessToken = body['access_token']
-
-    console.log(accessToken)
-});
+startServer()
