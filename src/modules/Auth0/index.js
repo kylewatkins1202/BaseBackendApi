@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler')
 const router = require('express').Router()
 const log = require("npmlog")
 const auth0Controller = require('./controller')
+const isAuthorized = require('./middleware/isAuthorized')
 
 router.get('/login', asyncHandler(async (req, res) => {
     // Get code from query
@@ -47,6 +48,13 @@ router.post('/refresh', asyncHandler(async (req, res) => {
         // Throw error
         throw `Bad Request`
     }
+}))
+
+router.post('/check-session', isAuthorized, asyncHandler(async (req, res) => {
+    // Send body
+    res.send({
+        authorized: true
+    })
 }))
 
 module.exports = router

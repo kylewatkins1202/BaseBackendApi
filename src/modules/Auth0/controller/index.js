@@ -30,7 +30,7 @@ async function getAccessToken({code = null}) {
 
     // If success
     if (response.statusCode !== 200 || body === null) {
-        log.error(`Authentication Error: ${error.message}`)
+        log.error(`Authentication Error: ${response}`)
         throw response    
     }
 
