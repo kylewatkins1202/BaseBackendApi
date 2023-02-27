@@ -1,11 +1,17 @@
-const expressJwt = require('express-oauth2-jwt-bearer')
+const {verifyToken} = require('../controller/index')
 const log = require('npmlog')
-
-var jwtCheck = expressJwt.auth({
-    issuerBaseURL: "https://dev-8thfiirtu53kyn3d.us.auth0.com/",
-    audience: "https://www.challenges-api",
-    tokenSigningAlg: 'RS256'
-});
+const checkToken = async (req, res, next) => {
+    let headers = req.headers
+    let token = (headers?.authorization ?? '').replace('Bearer ', '')
+    let response = await verifyToken({token: token})
+    if (response === true) {
+        next()
+    }
+    else {
+        log.error(response)
+        next('Unauthorized')
+    }
+}
 
 const authFailCatcher = (error, req, res, next) => {
     if (error !== undefined) {
@@ -28,4 +34,4 @@ const authFailCatcher = (error, req, res, next) => {
     }
 }
 
-module.exports = [jwtCheck, authFailCatcher]
+module.exports = [checkToken, authFailCatcher]

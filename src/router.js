@@ -1,11 +1,7 @@
 const router = require('express').Router()
-const guard = require("express-jwt-permissions")()
 
 // Middleware
-const isAuthorized = require('./modules/Auth0/middleware/isAuthorized')
-
-// Routes
-router.use('/auth', require('./modules/Auth0'))
+const isAuthorized = require('./modules/Memberstack/middleware/isAuthorized')
 
 // Authorized Routes
 router.use('/test', isAuthorized, require('./modules/test'))
